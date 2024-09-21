@@ -152,9 +152,10 @@ st.subheader("Best & Worst Performing Product")
 
 fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(35, 15))
 
-colors = ["#90CAF9", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
+best_colors = ["#90CAF9", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
+worst_colors = ["#FF6347", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
 
-sns.barplot(x="Sold", y="product_category", data=top_product_category_df.head(5), palette=colors, ax=ax[0])
+sns.barplot(x="Sold", y="product_category", data=top_product_category_df.head(5), palette=best_colors, ax=ax[0])
 ax[0].set_ylabel(None)
 ax[0].set_xlabel("Sold Quantity", fontsize=30)
 ax[0].set_title("Best Performing Product", loc="center", fontsize=50)
@@ -162,7 +163,7 @@ ax[0].tick_params(axis='y', labelsize=35)
 ax[0].tick_params(axis='x', labelsize=30)
 
 sns.barplot(x="Sold", y="product_category",
-            data=top_product_category_df.sort_values(by="Sold", ascending=True).head(5), palette=colors, ax=ax[1])
+            data=top_product_category_df.sort_values(by="Sold", ascending=True).head(5), palette=worst_colors, ax=ax[1])
 ax[1].set_ylabel(None)
 ax[1].set_xlabel("Sold Quantity", fontsize=30)
 ax[1].invert_xaxis()
@@ -174,11 +175,11 @@ ax[1].tick_params(axis='x', labelsize=30)
 
 st.pyplot(fig)
 
-#Most Used Pament Type
+#Most Used Payment Type
 st.subheader("Most Used Payment Type")
 
 fig, ax = plt.subplots(figsize=(20, 10))
-colors = ["#90CAF9", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
+colors = ["#90CAF9", "#D3D3D3", "#D3D3D3", "#FF6347"]
 sns.barplot(
     x="order_id",
     y="payment_type",
@@ -211,6 +212,5 @@ ax.set_xlabel(None)
 ax.tick_params(axis='y', labelsize=20)
 ax.tick_params(axis='x', labelsize=15)
 st.pyplot(fig)
-
 
 st.caption('Copyright © Mukhammad Shobikh')
