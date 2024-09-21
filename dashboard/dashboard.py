@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
+import os
 from babel.numbers import format_currency
 
 sns.set(style='dark')
@@ -40,7 +41,8 @@ def create_bystate_df(df):
     return bystate_df
 
 # Load cleaned data
-all_df = pd.read_csv("main_data.csv")
+file_path = os.path.join(os.path.dirname(__file__), 'main_data.csv')
+all_df = pd.read_csv(file_path)
 
 datetime_columns = ["order_purchase_timestamp", "order_delivered_customer_date"]
 all_df.sort_values(by="order_purchase_timestamp", inplace=True)
