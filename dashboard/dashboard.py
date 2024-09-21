@@ -23,6 +23,18 @@ def create_daily_orders_df(df):
 
     return daily_orders_df
 
+def create_monthly_orders_df(df):
+    monthly_orders_df = df.resample(rule='M', on='order_purchase_timestamp').agg({
+        "order_id": "nunique",
+        "payment_value": "sum"
+    })
+    monthly_orders_df = monthly_orders_df.reset_index()
+    monthly_orders_df.rename(columns={
+        "order_id": "order_count",
+        "payment_value": "revenue"
+    }, inplace=True)
+
+    return monthly_orders_df
 
 def top_product_category_df(df):
     top_product_category_df = df.groupby("product_category_name_english").order_id.nunique().sort_values(ascending=False).reset_index()
@@ -39,6 +51,10 @@ def create_bystate_df(df):
     }, inplace=True)
 
     return bystate_df
+
+def most_used_payment_type_df(df):
+    most_used_payment_type_df = df.groupby("payment_type").order_id.nunique().reset_index()
+    return most_used_payment_type_df
 
 # Load cleaned data
 file_path = os.path.join(os.path.dirname(__file__), 'main_data.csv')
@@ -73,10 +89,12 @@ main_df = all_df[(all_df["order_purchase_timestamp"] >= str(start_date)) &
 
 # # Menyiapkan berbagai dataframe
 daily_orders_df = create_daily_orders_df(main_df)
+monthly_orders_df = create_monthly_orders_df(main_df)
 top_product_category_df = top_product_category_df(main_df)
 bystate_df = create_bystate_df(main_df)
+most_used_payment_type_df = most_used_payment_type_df(main_df)
 
-# plot number of daily orders (2021)
+# plot number of daily orders
 st.header('Dicoding Submission Dashboard :sparkles:')
 st.subheader('Daily Orders')
 
@@ -103,6 +121,32 @@ ax.tick_params(axis='x', labelsize=15)
 
 st.pyplot(fig)
 
+# Monthly Order
+st.subheader('Monthly Orders')
+
+col1, col2 = st.columns(2)
+
+with col1:
+    total_orders = monthly_orders_df.order_count.sum()
+    st.metric("Total orders", value=total_orders)
+
+with col2:
+    total_revenue = format_currency(monthly_orders_df.revenue.sum(), "BRL", locale='es_CO')
+    st.metric("Total Revenue", value=total_revenue)
+
+fig, ax = plt.subplots(figsize=(16, 8))
+ax.plot(
+    monthly_orders_df["order_purchase_timestamp"],
+    monthly_orders_df["order_count"],
+    marker='o',
+    linewidth=2,
+    color="#90CAF9"
+)
+ax.tick_params(axis='y', labelsize=20)
+ax.tick_params(axis='x', labelsize=15)
+
+st.pyplot(fig)
+
 # Product performance
 st.subheader("Best & Worst Performing Product")
 
@@ -112,7 +156,7 @@ colors = ["#90CAF9", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
 
 sns.barplot(x="Sold", y="product_category", data=top_product_category_df.head(5), palette=colors, ax=ax[0])
 ax[0].set_ylabel(None)
-ax[0].set_xlabel("Number of Sales", fontsize=30)
+ax[0].set_xlabel("Sold Quantity", fontsize=30)
 ax[0].set_title("Best Performing Product", loc="center", fontsize=50)
 ax[0].tick_params(axis='y', labelsize=35)
 ax[0].tick_params(axis='x', labelsize=30)
@@ -120,7 +164,7 @@ ax[0].tick_params(axis='x', labelsize=30)
 sns.barplot(x="Sold", y="product_category",
             data=top_product_category_df.sort_values(by="Sold", ascending=True).head(5), palette=colors, ax=ax[1])
 ax[1].set_ylabel(None)
-ax[1].set_xlabel("Number of Sales", fontsize=30)
+ax[1].set_xlabel("Sold Quantity", fontsize=30)
 ax[1].invert_xaxis()
 ax[1].yaxis.set_label_position("right")
 ax[1].yaxis.tick_right()
@@ -128,6 +172,25 @@ ax[1].set_title("Worst Performing Product", loc="center", fontsize=50)
 ax[1].tick_params(axis='y', labelsize=35)
 ax[1].tick_params(axis='x', labelsize=30)
 
+st.pyplot(fig)
+
+#Most Used Pament Type
+st.subheader("Most Used Payment Type")
+
+fig, ax = plt.subplots(figsize=(20, 10))
+colors = ["#90CAF9", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
+sns.barplot(
+    x="order_id",
+    y="payment_type",
+    data=most_used_payment_type_df.sort_values(by="order_id", ascending=False),
+    palette=colors,
+    ax=ax
+)
+ax.set_title("Most Used Payment Type", loc="center", fontsize=30)
+ax.set_ylabel("Payment Type", fontsize=20)
+ax.set_xlabel("Used (Time)", fontsize=20)
+ax.tick_params(axis='y', labelsize=20)
+ax.tick_params(axis='x', labelsize=15)
 st.pyplot(fig)
 
 # customer demographic
@@ -149,4 +212,5 @@ ax.tick_params(axis='y', labelsize=20)
 ax.tick_params(axis='x', labelsize=15)
 st.pyplot(fig)
 
-st.caption('Copyright ©')
+
+st.caption('Copyright © Mukhammad Shobikh')
