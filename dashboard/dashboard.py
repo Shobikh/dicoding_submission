@@ -175,7 +175,7 @@ ax[1].tick_params(axis='x', labelsize=30)
 
 st.pyplot(fig)
 
-#Most Used Payment Type
+#Most Used Pament Type
 st.subheader("Most Used Payment Type")
 
 fig, ax = plt.subplots(figsize=(20, 10))
@@ -195,14 +195,14 @@ ax.tick_params(axis='x', labelsize=15)
 st.pyplot(fig)
 
 # customer demographic
-st.subheader("Customer Demographics")
+st.subheader("Top 10 of Customer Demographics")
 
 fig, ax = plt.subplots(figsize=(20, 10))
-colors = ["#90CAF9", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
+colors = ["#90CAF9", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
 sns.barplot(
     x="customer_count",
     y="customer_state",
-    data=bystate_df.sort_values(by="customer_count", ascending=False),
+    data=bystate_df.sort_values(by="customer_count", ascending=False).head(10),
     palette=colors,
     ax=ax
 )
